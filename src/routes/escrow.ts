@@ -33,4 +33,9 @@ router.post("/create", async (req, res, next) => {
 	res.send(req.body);
 });
 
+router.get("/", async (req, res) => {
+	const escrow = await Escrow.findAll()
+	res.send(escrow);
+})
+
 export default router;
