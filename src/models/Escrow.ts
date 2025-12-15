@@ -1,31 +1,13 @@
-
 import dotenv from "dotenv";
 import { Sequelize, DataTypes, Model, UUIDV4 } from "sequelize";
-
-dotenv.config()
-
-const databaseName = process.env.DB_NAME;
-const username = process.env.DB_USER
-const password = process.env.DB_PASSWORD
-const sequelize = new Sequelize(
-	databaseName, 
-	username, 
-	password, {
-  dialect: "mysql",
-  logging: true,
-});
-
-sequelize.authenticate()
-  .then(() => console.log("Database connected"))
-  .catch(err => console.error("Connection error:", err));
-
-//await sequelize.sync({ alter: true });
+import sequelize from "../database";
+dotenv.config();
 
 class Escrow extends Model {}
 
 Escrow.init(
   {
-	id: {
+    id: {
       type: DataTypes.UUID,
       defaultValue: UUIDV4,
       primaryKey: true,
@@ -37,18 +19,18 @@ Escrow.init(
     },
 
     productDescription: {
-      type: DataTypes.TEXT,
+      type: DataTypes.STRING,
       allowNull: false,
     },
 
-   pricet: {
+    price: {
       type: DataTypes.DECIMAL(10, 2),
       allowNull: false,
     },
 
     quantity: {
-	type: DataTypes.INTEGER,
-	defaultValue: 1
+      type: DataTypes.INTEGER,
+      defaultValue: 1,
     },
 
     buyerId: {
@@ -66,9 +48,7 @@ Escrow.init(
       defaultValue: "pending",
     },
   },
-  { sequelize, timestamps: true}
+  { sequelize, timestamps: true },
 );
-
-sequelize.sync({alter: true});
 
 export default Escrow;
