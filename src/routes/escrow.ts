@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { Sequelize, DataTypes } from "sequelize";
 import Escrow from "../models/Escrow";
+import getUserEscrows from "../controllers/getUserEscrows";
 
 // const username = "admin";
 // const password = "@lliCodes123";
@@ -34,7 +35,7 @@ router.post("/create", async (req, res, next) => {
 });
 
 router.get("/", async (req, res) => {
-	const escrow = await Escrow.findAll()
+	const escrow = await getUserEscrows("1");
 	res.send(escrow);
 })
 
