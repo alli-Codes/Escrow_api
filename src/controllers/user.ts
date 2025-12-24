@@ -33,3 +33,16 @@ export const loginUser = async function (payload: Account) {
 
   return { status: 200, message: "User successfully logged in!", user };
 };
+
+export const getUser = async function (payload: { id: string }) {
+  try {
+    const user = await User.findOne({ where: { id: payload.id } });
+    console.log(payload.id, user);
+    if (!user) {
+      throw "User doesn't exist";
+    }
+    return user;
+  } catch (err) {
+    throw err;
+  }
+};
