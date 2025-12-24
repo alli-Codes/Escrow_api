@@ -1,7 +1,10 @@
 import { Model, DataTypes, UUIDV4 } from "sequelize";
 import sequelize from "../database";
+import bcrypt from "bcryptjs";
 
-class User extends Model {}
+class User extends Model {
+  public password: string;
+}
 
 User.init(
   {
@@ -18,6 +21,10 @@ User.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    email: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
     password: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -27,7 +34,21 @@ User.init(
       allowNull: false,
     },
   },
-  { sequelize, timestamps: true },
+  {
+    sequelize,
+    timestamps: true,
+    hooks: {
+      async beforeCreate(user: User) {
+        // hash password
+        if (user.password) {
+          user.password = await bcrypt.hash(
+            user.password,
+            Number(process.env.PASSWORD_SALT),
+          );
+        }
+      },
+    },
+  },
 );
 
 export default User;
