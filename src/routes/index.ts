@@ -1,3 +1,4 @@
+import users from "./users";
 import escrow from "./escrow";
 
-export default { escrow };
+export default { users, escrow };

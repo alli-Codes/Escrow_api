@@ -1,9 +1,11 @@
 import { Router } from "express";
 // import User from "../../src/models/User";
 import { createUser } from "../controllers/createUser";
+import { loginUser } from "../controllers/user";
 
 const router = Router();
-router.post("/api/v1/users/create", async (req, res) => {
+
+router.post("/create", async (req, res) => {
   try {
     const newUser = await createUser(req.body);
     res.status(200).json(newUser);
@@ -11,6 +13,16 @@ router.post("/api/v1/users/create", async (req, res) => {
     res.status(400).json(err);
   }
 });
-router.get("/api/v1/user", (req, res) => res.send("hello"));
+
+router.post("/login", async (req, res) => {
+  try {
+    const user = await loginUser(req.body);
+    res.status(200).json(user);
+  } catch (err) {
+    res.status(400).json(err);
+  }
+});
+
+router.get("/user", (req, res) => res.send("hello"));
 
 export default router;
