@@ -1,11 +1,13 @@
 import express from "express";
-import users from "./routes/users";
 import colors from "colors";
+import cookieParser from "cookie-parser";
+import users from "./routes/users";
 import routes from "./routes";
 
 const server = express();
 const port = 3000;
 
+server.use(cookieParser());
 server.use(express.json());
 server.use(express.urlencoded({ extended: true }));
 server.use(users);

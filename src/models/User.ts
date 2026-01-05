@@ -3,7 +3,12 @@ import sequelize from "../database";
 import bcrypt from "bcryptjs";
 
 class User extends Model {
+  public id: string;
   public password: string;
+
+  public static associate(models: any) {
+    User.hasMany(models.User, { foreignKey: "userId" });
+  }
 }
 
 User.init(

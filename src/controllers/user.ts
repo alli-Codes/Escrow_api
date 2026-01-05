@@ -1,6 +1,7 @@
 import { Schema } from "json-validace";
 import User from "../models/User";
 import bcrypt from "bcryptjs";
+import { generateTokens } from "../controllers/token";
 
 type Account = {
   email: string;
@@ -19,7 +20,9 @@ export const loginUser = async function (payload: Account) {
     throw result.error;
   }
 
-  const user = await User.findOne({ where: { email: payload.email } });
+  const user = await User.findOne({
+    where: { email: payload.email },
+  });
 
   if (!user) {
     throw "User doesn't exist!";
@@ -31,7 +34,17 @@ export const loginUser = async function (payload: Account) {
     throw "Invalid user credentials!";
   }
 
-  return { status: 200, message: "User successfully logged in!", user };
+  const { password, ...userWithoutPassword } = user.toJSON();
+
+  const { accessToken, refreshToken } = await generateTokens(user.id);
+
+  return {
+    status: 200,
+    message: "User successfully logged in!",
+    userWithoutPassword,
+    accessToken,
+    refreshToken,
+  };
 };
 
 export const getUser = async function (payload: { id: string }) {
