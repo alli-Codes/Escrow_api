@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import Token from "../models/Token";
+import { Token } from "../models";
 
 export const generateTokens = async function (payload: string) {
   const id = { payload };
