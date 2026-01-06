@@ -14,7 +14,7 @@ export const createUser = async function (payload: Account) {
   const schema = new Schema({
     firstName: { type: "string", required: true },
     lastName: { type: "string", required: true },
-    email: { type: "email", required: true },
+    email: { type: ["email", "please insert a valid email"], required: true },
     password: { type: "string", required: true },
     accountType: { type: "string", required: true },
   });

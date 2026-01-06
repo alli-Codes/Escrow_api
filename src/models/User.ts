@@ -1,14 +1,15 @@
 import { Model, DataTypes, UUIDV4 } from "sequelize";
 import sequelize from "../database";
 import bcrypt from "bcryptjs";
+// import Token from "./Token";
 
 class User extends Model {
   public id: string;
   public password: string;
 
-  public static associate(models: any) {
-    User.hasMany(models.User, { foreignKey: "userId" });
-  }
+  // public static associate(models: any) {
+  //   User.hasMany(models.User, { foreignKey: "userId" });
+  // }
 }
 
 User.init(
@@ -55,5 +56,9 @@ User.init(
     },
   },
 );
+
+// User.hasMany(Token, {
+//   foreignKey: "userId",
+// });
 
 export default User;

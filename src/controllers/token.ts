@@ -14,7 +14,7 @@ export const generateTokens = async function (payload: string) {
     expiresIn: "7d",
   });
 
-  Token.create({ userId: id, refreshToken });
+  Token.create({ userId: payload, refreshToken });
 
   return { accessToken, refreshToken };
 };
