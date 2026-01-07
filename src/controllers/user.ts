@@ -67,7 +67,7 @@ export const loginUser = async function (payload: Account) {
   return {
     status: 200,
     message: "User successfully logged in!",
-    userWithoutPassword,
+    user: userWithoutPassword,
     accessToken,
     refreshToken,
   };
