@@ -5,7 +5,7 @@ import users from "./routes/users";
 import routes from "./routes";
 
 const server = express();
-const port = 3000;
+const port = process.env.PORT;
 
 server.use(cookieParser());
 server.use(express.json());
