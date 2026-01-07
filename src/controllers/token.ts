@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import { Token } from "../models";
 
 export const generateTokens = async function (payload: string) {
-  const id = { payload };
+  const id = { id: payload };
   const accessTokenSecret = process.env.ACCESS_TOKEN_CLIENT_SECRET;
   const refreshTokenSecret = process.env.REFRESH_TOKEN_CLIENT_SECRET;
 

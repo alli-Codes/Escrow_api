@@ -73,10 +73,11 @@ export const loginUser = async function (payload: Account) {
   };
 };
 
-export const getUser = async function (payload: { id: string }) {
+export const getUser = async function (id: string) {
   try {
-    const user = await User.findOne({ where: { id: payload.id } });
-    console.log(payload.id, user);
+    const user = await User.findByPk(id, {
+      attributes: { exclude: ["password"] },
+    });
     if (!user) {
       throw "User doesn't exist";
     }
