@@ -1,9 +1,13 @@
-import dotenv from "dotenv";
+// import dotenv from "dotenv";
 import { Sequelize, DataTypes, Model, UUIDV4 } from "sequelize";
 import sequelize from "../database";
-dotenv.config();
+// dotenv.config();
 
-class Escrow extends Model {}
+class Escrow extends Model {
+  public readonly id: string;
+  public productName: string;
+  public productDescription: string;
+}
 
 Escrow.init(
   {
@@ -40,12 +44,28 @@ Escrow.init(
 
     sellerId: {
       type: DataTypes.UUID,
-      allowNull: false,
+      allowNull: true,
     },
 
     status: {
       type: DataTypes.ENUM("pending", "funded", "released", "cancelled"),
       defaultValue: "pending",
+    },
+
+    deliveryMethod: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: "pickup",
+    },
+
+    deliveryFee: {
+      type: DataTypes.DECIMAL,
+      allowNull: false,
+    },
+
+    estimatedDeliveryTime: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
     },
   },
   { sequelize, timestamps: true },
