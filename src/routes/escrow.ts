@@ -2,7 +2,7 @@ import { Router } from "express";
 import { Sequelize, DataTypes } from "sequelize";
 import Escrow from "../models/Escrow";
 import getUserEscrows from "../controllers/getUserEscrows";
-import { createEscrow } from "../controllers/escrow";
+import { createEscrow, editEscrowBySeller } from "../controllers/escrow";
 
 const router = Router();
 router.post("/create", async (req, res, next) => {
@@ -18,6 +18,15 @@ router.post("/create", async (req, res, next) => {
 router.get("/", async (req, res) => {
   const escrow = await getUserEscrows("1");
   res.send(escrow);
+});
+
+router.patch("/edit/:id", async (req, res) => {
+  try {
+    await editEscrowBySeller(req.params.id, req.body);
+    res.status(201).json({ message: "Edited Successfully!" });
+  } catch (error) {
+    console.log(error);
+  }
 });
 
 export default router;

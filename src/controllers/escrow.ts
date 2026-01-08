@@ -20,3 +20,16 @@ export const createEscrow = async function (payload: EscrowType) {
     throw error;
   }
 };
+
+export const editEscrowBySeller = async function (
+  id: string,
+  payload: EscrowType,
+) {
+  try {
+    Escrow.update(payload, {
+      where: { id },
+    });
+  } catch (error) {
+    throw error;
+  }
+};
