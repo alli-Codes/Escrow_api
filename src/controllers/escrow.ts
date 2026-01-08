@@ -34,10 +34,15 @@ export const editEscrowBySeller = async function (
   }
 };
 
-export const getAllUserEscrow = async function (id: string) {
+export const getAllUserEscrow = async function (auth: {
+  id: string;
+  role: string;
+}) {
   try {
-    const escrows = await Escrow.findAll({ where: { id } });
-    return escrows;
+    if (auth.role === "buyer") {
+      return await Escrow.findAll({ where: { buyerId: auth.id } });
+    }
+    return await Escrow.findAll({ where: { sellerId: auth.id } });
   } catch (error) {
     throw error;
   }

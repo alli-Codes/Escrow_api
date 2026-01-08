@@ -33,12 +33,15 @@ router.patch("/edit/:id", async (req, res) => {
   }
 });
 
-router.get("/all/:id", async (req, res) => {
+router.get("/all", async (req, res) => {
   try {
     // console.log(req.user);
-    const escrows = await getAllUserEscrow(req.params.id);
-    console.log(escrows);
-    res.status(201).json(escrows);
+    //@ts-ignore
+    //
+    const escrows = await getAllUserEscrow(req.auth);
+    //@ts-ignore
+    console.log(req.auth.id);
+    res.status(200).json(escrows);
   } catch (error) {
     console.log(error);
   }

@@ -3,10 +3,12 @@ import colors from "colors";
 import cookieParser from "cookie-parser";
 import users from "./routes/users";
 import routes from "./routes";
+import { auth } from "./middlewares/auth";
 
 const server = express();
 const port = process.env.PORT;
 
+server.use(auth);
 server.use(cookieParser());
 server.use(express.json());
 server.use(express.urlencoded({ extended: true }));
