@@ -33,3 +33,12 @@ export const editEscrowBySeller = async function (
     throw error;
   }
 };
+
+export const getAllUserEscrow = async function (id: string) {
+  try {
+    const escrows = await Escrow.findAll({ where: { id } });
+    return escrows;
+  } catch (error) {
+    throw error;
+  }
+};
