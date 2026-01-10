@@ -35,7 +35,6 @@ router.patch("/edit/:id", async (req, res) => {
 
 router.get("/all", async (req, res) => {
   try {
-    // console.log(req.user);
     //@ts-ignore
     //
     const escrows = await getAllUserEscrow(req.auth);

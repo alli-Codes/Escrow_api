@@ -1,7 +1,5 @@
-// import dotenv from "dotenv";
 import { Sequelize, DataTypes, Model, UUIDV4 } from "sequelize";
 import sequelize from "../database";
-// dotenv.config();
 
 class Escrow extends Model {
   public readonly id: string;
