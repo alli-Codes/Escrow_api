@@ -1,7 +1,10 @@
-import { Model, DataTypes, UUIDV4 } from "sequelize";
+import { Model, DataTypes } from "sequelize";
 import sequelize from "../database";
 
-class Token extends Model {}
+class Token extends Model {
+  public refreshToken: string;
+  public userId: string;
+}
 
 Token.init(
   {

@@ -5,10 +5,6 @@ import bcrypt from "bcryptjs";
 class User extends Model {
   public id: string;
   public password: string;
-
-  // public static associate(models: any) {
-  //   User.hasMany(models.User, { foreignKey: "userId" });
-  // }
 }
 
 User.init(
@@ -44,7 +40,6 @@ User.init(
     timestamps: true,
     hooks: {
       async beforeCreate(user: User) {
-        // hash password
         if (user.password) {
           user.password = await bcrypt.hash(
             user.password,

@@ -1,4 +1,4 @@
-import { Sequelize, DataTypes, Model, UUIDV4 } from "sequelize";
+import { DataTypes, Model, UUIDV4 } from "sequelize";
 import sequelize from "../database";
 
 class Escrow extends Model {

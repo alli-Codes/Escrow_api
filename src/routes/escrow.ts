@@ -1,6 +1,4 @@
 import { Router } from "express";
-import { Sequelize, DataTypes } from "sequelize";
-import Escrow from "../models/Escrow";
 import getUserEscrows from "../controllers/getUserEscrows";
 import {
   createEscrow,
