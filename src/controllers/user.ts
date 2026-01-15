@@ -56,7 +56,7 @@ export const loginUser = async function (
 ) {
   const schema = new Schema({
     email: { type: "email", required: true },
-    password: { type: "string", required: true, message: "No" },
+    password: { type: "string", required: true },
   });
 
   const { data, error } = schema.validate(req.body);
@@ -64,9 +64,36 @@ export const loginUser = async function (
   if (error) {
     console.log(error);
     //@ts-ignore
-    res.status(400).json({ message: error.email });
+    return res.status(400).json({ message: error.email });
   }
-  return {};
+
+  const user = await User.findOne({
+    where: { email: data.email },
+    attributes: {
+      exclude: ["password"],
+    },
+  });
+
+  if (!user) {
+    return res.status(404).json({ message: "User does not exist" });
+  }
+
+  const isPassword = await bcrypt.compare(data.password, user.password);
+
+  if (!isPassword) {
+    return res.status(400).json({ message: "Invalid credentials!" });
+  }
+
+  const { accessToken, refreshToken } = await generateTokens(user.id);
+
+  return res.status(200).json({
+    status: 200,
+    message: "User successfully logged in!",
+    user,
+    accessToken,
+    refreshToken,
+  });
+
   // if (result.error) {
   //   throw result.error;
   // }
@@ -78,7 +105,7 @@ export const loginUser = async function (
   // }
 
   // if (!user) {
-  //   throw "User doesn't exist!";
+  //   throw
   // }
 
   // const isPassword = await bcrypt.compare(payload.password, user.password);
