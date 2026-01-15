@@ -8,13 +8,13 @@ import { auth } from "./middlewares/auth";
 const server = express();
 const port = process.env.PORT;
 
-server.use(auth);
 server.use(cookieParser());
 server.use(express.json());
 server.use(express.urlencoded({ extended: true }));
 server.use(users);
-server.use("/api/v1/escrow", routes.escrow);
 server.use("/api/v1/users", routes.users);
+server.use(auth);
+server.use("/api/v1/escrow", routes.escrow);
 
 server.listen(port, () =>
   console.log(colors.green(`Server is running on port ${port}`)),
