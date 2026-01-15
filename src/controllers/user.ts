@@ -3,6 +3,7 @@ import User from "../models/User";
 import bcrypt from "bcryptjs";
 import { generateTokens } from "../controllers/token";
 import { Request, Response, NextFunction } from "express";
+import jwt from "jsonwebtoken";
 
 /*
  **** Function to create a user and write to DB ****
@@ -90,16 +91,25 @@ export const loginUser = async function (
 /*
  **** Function to get a user from DB ****
  */
-export const getUser = async function (id: string) {
-  try {
-    const user = await User.findByPk(id, {
-      attributes: { exclude: ["password"] },
-    });
-    if (!user) {
-      throw "User doesn't exist";
-    }
-    return user;
-  } catch (err) {
-    throw err;
+export const getUser = async function (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  //@ts-ignore
+  //
+  const token = req.headers.authorization?.split(" ")[1];
+  const payload = jwt.verify(token, process.env.ACCESS_TOKEN_CLIENT_SECRET) as {
+    id: string;
+  };
+
+  const user = await User.findByPk(payload.id, {
+    attributes: { exclude: ["password"] },
+  });
+
+  if (!user) {
+    res.status(404).json({ message: "User not found!" });
   }
+
+  return res.status(200).json(user);
 };
