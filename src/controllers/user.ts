@@ -4,24 +4,9 @@ import bcrypt from "bcryptjs";
 import { generateTokens } from "../controllers/token";
 import { Request, Response, NextFunction } from "express";
 
-type Account = {
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-  accountType: string;
-};
-
-export const test = async function (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) {
-  console.log(await req.body);
-  return {};
-};
-
-//Function to create a user and write to DB
+/*
+ **** Function to create a user and write to DB ****
+ */
 export const createUser = async function (
   req: Request,
   res: Response,
@@ -49,6 +34,10 @@ export const createUser = async function (
   return User.create(result.data);
 };
 
+/*
+ **** Function to login user ****
+ */
+
 export const loginUser = async function (
   req: Request,
   res: Response,
@@ -60,30 +49,33 @@ export const loginUser = async function (
   });
 
   const { data, error } = schema.validate(req.body);
-  console.log(data);
+
+  // If error from the validation
   if (error) {
     console.log(error);
-    //@ts-ignore
-    return res.status(400).json({ message: error.email });
+    return res.status(400).json({ message: error });
   }
 
-  const user = await User.findOne({
+  // Query user using email from DB
+  const result = await User.findOne({
     where: { email: data.email },
-    attributes: {
-      exclude: ["password"],
-    },
   });
 
-  if (!user) {
+  // If user does not exit in DB
+  if (!result) {
     return res.status(404).json({ message: "User does not exist" });
   }
 
-  const isPassword = await bcrypt.compare(data.password, user.password);
+  // Destructure password from the data and comparing passwords
+  const { password, ...user } = result.toJSON();
+
+  const isPassword = await bcrypt.compare(data.password, password);
 
   if (!isPassword) {
     return res.status(400).json({ message: "Invalid credentials!" });
   }
 
+  // Generating tokens
   const { accessToken, refreshToken } = await generateTokens(user.id);
 
   return res.status(200).json({
@@ -93,40 +85,11 @@ export const loginUser = async function (
     accessToken,
     refreshToken,
   });
-
-  // if (result.error) {
-  //   throw result.error;
-  // }
-
-  // const user = await User.findOne({
-  //   where: { email: payload.email },
-  // });if (error) {
-  // console.log(error);
-  // }
-
-  // if (!user) {
-  //   throw
-  // }
-
-  // const isPassword = await bcrypt.compare(payload.password, user.password);
-
-  // if (!isPassword) {
-  //   throw "Invalid user credentials!";
-  // }
-
-  // const { password, ...userWithoutPassword } = user.toJSON();
-
-  // const { accessToken, refreshToken } = await generateTokens(user.id);
-
-  // return {
-  //   status: 200,
-  //   message: "User successfully logged in!",
-  //   user: userWithoutPassword,
-  //   accessToken,
-  //   refreshToken,
-  // };
 };
 
+/*
+ **** Function to get a user from DB ****
+ */
 export const getUser = async function (id: string) {
   try {
     const user = await User.findByPk(id, {
