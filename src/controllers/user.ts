@@ -5,14 +5,15 @@ import { generateTokens } from "../controllers/token";
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 
+type UserType = {
+  email: string;
+  password: string;
+};
+
 /*
  **** Function to create a user and write to DB ****
  */
-export const createUser = async function (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) {
+export const createUser = async function (payload: UserType) {
   const schema = new Schema({
     firstName: { type: "string", required: true },
     lastName: { type: "string", required: true },
@@ -21,95 +22,52 @@ export const createUser = async function (
     accountType: { type: "string", required: true },
   });
 
-  const result = schema.validate(req.body);
+  const result = schema.validate(payload);
 
   if (result.error) {
     throw result.error;
   }
-  const user = await User.findOne({ where: { email: req.body.email } });
+  const user = await User.findOne({
+    where: { email: payload.email },
+  });
 
   if (user) {
-    res.status(400).json({ message: "Email already exist" });
+    throw new Error("Email already exist");
   }
 
-  return User.create(result.data);
+  const newUser = await User.create(result.data);
+  const withoutPassword = await newUser.withoutField(["password"]);
+
+  return withoutPassword;
 };
 
 /*
  **** Function to login user ****
  */
 
-export const loginUser = async function (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) {
-  const schema = new Schema({
-    email: { type: "email", required: true },
-    password: { type: "string", required: true },
-  });
+export const loginUser = async ({ email, password }: UserType) => {
+  const user = await User.findOne({ where: { email } });
+  if (!user) throw new Error("User not found");
 
-  const { data, error } = schema.validate(req.body);
+  const isValid = await bcrypt.compare(password, user.password);
+  if (!isValid) throw new Error("Invalid credentials");
 
-  // If error from the validation
-  if (error) {
-    console.log(error);
-    return res.status(400).json({ message: error });
-  }
-
-  // Query user using email from DB
-  const result = await User.findOne({
-    where: { email: data.email },
-  });
-
-  // If user does not exit in DB
-  if (!result) {
-    return res.status(404).json({ message: "User does not exist" });
-  }
-
-  // Destructure password from the data and comparing passwords
-  const { password, ...user } = result.toJSON();
-
-  const isPassword = await bcrypt.compare(data.password, password);
-
-  if (!isPassword) {
-    return res.status(400).json({ message: "Invalid credentials!" });
-  }
-
-  // Generating tokens
-  const { accessToken, refreshToken } = await generateTokens(user.id);
-
-  return res.status(200).json({
-    status: 200,
-    message: "User successfully logged in!",
-    user,
-    accessToken,
-    refreshToken,
-  });
+  const tokens = await generateTokens(user.id);
+  return { user, ...tokens };
 };
 
 /*
  **** Function to get a user from DB ****
  */
-export const getUser = async function (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) {
-  //@ts-ignore
-  //
-  const token = req.headers.authorization?.split(" ")[1];
+export const getUser = async function (token: string) {
   const payload = jwt.verify(token, process.env.ACCESS_TOKEN_CLIENT_SECRET) as {
     id: string;
   };
-
   const user = await User.findByPk(payload.id, {
     attributes: { exclude: ["password"] },
   });
-
   if (!user) {
-    res.status(404).json({ message: "User not found!" });
+    throw new Error("User not found!");
   }
-
-  return res.status(200).json(user);
+  return user;
 };

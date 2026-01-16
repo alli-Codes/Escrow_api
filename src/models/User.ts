@@ -4,7 +4,16 @@ import bcrypt from "bcryptjs";
 
 class User extends Model {
   public id: string;
+  public email: string;
   public password: string;
+  public updatedAt: string;
+
+  async withoutField(fields: [string]) {
+    return await User.findOne({
+      where: { email: this.email },
+      attributes: { exclude: fields },
+    });
+  }
 }
 
 User.init(
